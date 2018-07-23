@@ -1,0 +1,47 @@
+inputs:
+  #############################
+  # Provider specific Inputs
+  #############################
+  keystone_username:
+    default: 'user'
+    type: string
+
+  keystone_password:
+    default: 'password'
+    type: string
+
+  keystone_tenant_name:
+    default: 'demo'
+    type: string
+
+  keystone_url:
+    default: 'http://10.0.200.229/identity/v3'
+    type: string
+
+  image_id:
+    default: 'ad7c6774-125a-4ed9-844d-7a8f64bb13ea'
+    type: string
+
+  flavor_id:
+    default: 'm1.medium'
+    type: string
+
+  network_name:
+    default: 'public'
+    type: string
+
+  network_id:
+    default: '176c4f91-b690-4d8e-bbfc-4f862abb0d0d'
+    type: string
+
+  key_name:
+    default: 'sample'
+    type: string
+
+
+dsl_definitions:
+  openstack_config: &openstack_config
+        username: { get_input: keystone_username }
+        password: { get_input: keystone_password }
+        tenant_name: { get_input: keystone_tenant_name }
+        auth_url: { get_input: keystone_url }
