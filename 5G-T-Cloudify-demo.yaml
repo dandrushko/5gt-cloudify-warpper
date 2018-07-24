@@ -1,41 +1,61 @@
 tosca_definitions_version: cloudify_dsl_1_3
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.2/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/2.7.4/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.3.2/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/2.9.0/plugin.yaml
   - openstack-deployment.yaml
+
+dsl_definitions:
+  openstack_config: &openstack_config
+    username: { get_input: username }
+    password: { get_input: password }
+    project_id: { get_input: project_id }
+    auth_url: { get_input: auth_url }
+    region: { get_input: region }
+    user_domain_name: { get_input: user_domain_name }
 
 node_templates:
   VNF1:
     type: cloudify.openstack.nodes.Server
     properties:
-      install_agent: false
+      agent_config:
+        install_method: none
       image: { get_input: image_id }
       flavor: { get_input: flavor_id }
-      management_network_name: { get_input: network_name }
       openstack_config: *openstack_config
     relationships:
-      - target: Port_VM1
-        type: cloudify.openstack.server_connected_to_port
-
+      - type: cloudify.openstack.server_connected_to_port
+        target: Port_VM1
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: key
 
   VNF2:
     type: cloudify.openstack.nodes.Server
     properties:
-      install_agent: false
+      agent_config:
+        install_method: none
       image: { get_input: image_id }
       flavor: { get_input: flavor_id }
-      management_network_name: { get_input: network_name }
       openstack_config: *openstack_config
     relationships:
-      - target: Port_VM2
-        type: cloudify.openstack.server_connected_to_port
+      - type: cloudify.openstack.server_connected_to_port
+        target: Port_VM2
+      - type: cloudify.openstack.server_connected_to_keypair
+        target: key
+
+  key:
+    type: cloudify.openstack.nodes.KeyPair
+    properties:
+      use_external_resource: true
+      resource_id: '<openstack keypair name>'
+      private_key_path: '<local path to private path>'
+      openstack_config: *openstack_config
 
 
   Net1:
     type: cloudify.openstack.nodes.Network
     properties:
-      resource_id: {get_input: network_id}
+      resource_id: {get_input: transport_network_name}
       use_external_resource: true
       openstack_config: *openstack_config
 
@@ -45,8 +65,8 @@ node_templates:
       resource_id: 'Port_VNF1'
       openstack_config: *openstack_config
     relationships:
-        - type: cloudify.relationships.contained_in
-          target: Net1
+      - type: cloudify.relationships.contained_in
+        target: Net1
 
   Port_VM2:
     type: cloudify.openstack.nodes.Port
@@ -54,8 +74,5 @@ node_templates:
       resource_id: 'Port_VNF2'
       openstack_config: *openstack_config
     relationships:
-        - type: cloudify.relationships.contained_in
-          target: Net1
-                               
-
-
+      - type: cloudify.relationships.contained_in
+        target: Net1
