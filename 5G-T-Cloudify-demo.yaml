@@ -26,8 +26,10 @@ node_templates:
     relationships:
       - type: cloudify.openstack.server_connected_to_port
         target: Port_VM1
-      - type: cloudify.openstack.server_connected_to_keypair
-        target: key
+      - type: cloudify.openstack.server_connected_to_security_group
+        target: SecurityGroup
+#      - type: cloudify.openstack.server_connected_to_keypair
+#        target: key
 
   VNF2:
     type: cloudify.openstack.nodes.Server
@@ -40,16 +42,19 @@ node_templates:
     relationships:
       - type: cloudify.openstack.server_connected_to_port
         target: Port_VM2
-      - type: cloudify.openstack.server_connected_to_keypair
-        target: key
+      - type: cloudify.openstack.server_connected_to_security_group
+        target: SecurityGroup
 
-  key:
-    type: cloudify.openstack.nodes.KeyPair
-    properties:
-      use_external_resource: true
-      resource_id: '<openstack keypair name>'
-      private_key_path: '<local path to private path>'
-      openstack_config: *openstack_config
+#      - type: cloudify.openstack.server_connected_to_keypair
+#        target: key
+
+#  key:
+#    type: cloudify.openstack.nodes.KeyPair
+#    properties:
+#      use_external_resource: true
+#      resource_id: '<openstack keypair name>'
+#      private_key_path: '<local path to private path>'
+#      openstack_config: *openstack_config
 
 
   Net1:
@@ -68,6 +73,7 @@ node_templates:
       - type: cloudify.relationships.contained_in
         target: Net1
 
+
   Port_VM2:
     type: cloudify.openstack.nodes.Port
     properties:
@@ -76,3 +82,16 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: Net1
+
+
+  SecurityGroup:
+    type: cloudify.openstack.nodes.SecurityGroup
+    properties:
+      openstack_config: *openstack_config
+      resource_id: NFV_Security_Group
+      rules:
+      - protocol: 'tcp'
+        remote_ip_prefix: 0.0.0.0/0
+      - protocol: 'icmp'
+        port_range_min: 0
+        port_range_max: 255

@@ -1,8 +1,10 @@
 from cloudify.test_utils import workflow_test
+
 import unittest
 
 
 class TestBlueprint(unittest.TestCase):
+
 
     @workflow_test('5G-T-Cloudify-demo.yaml')
     def test_blueprint(self, cfy_local):

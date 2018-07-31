@@ -3,23 +3,23 @@ inputs:
   # Deployment specific Inputs
   #############################
   image_id:
-    default: '<image id>'
+    default: ''
   flavor_id:
-    default: '<flavor id>'
+    default: ''
   transport_network_name:
-    default: '<net name>'
+    default: ''
   #############################
-  # OpenStack credentials v3 auth
+  # OpenStack credentials
   #############################
   username:
-    default: 'XXXX'
+    default: ''
   password:
-    default: 'YYYY'
+    default: ''
   project_id:
-    default: 'ZZZZ'
+    default: ''
   auth_url:
-    default: 'https://IP:5000/v3/'
+    default: ''
   user_domain_name:
-    default: 'AAAA'
+    default: ''
   region:
-    default: 'RegionOne'
+    default: ''
